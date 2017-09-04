@@ -6,6 +6,7 @@ module.exports = {
   watch: true,
   entry: {
     'js/index': './src/js/index.js',
+    'boxes/js/index': './src/boxes/js/index.js',
     'particle_normal/js/index': './src/particle_normal/js/index.js',
     'particle_text/js/index': './src/particle_text/js/index.js',
   },
