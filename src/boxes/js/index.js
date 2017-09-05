@@ -22,6 +22,9 @@ class ThreeBase{
 
     this.container.appendChild(this.renderer.domElement);
 
+    this.mouse = new THREE.Vector2();
+    this.INTERSECTED;
+
     window.addEventListener('resize', () => {
       this.resize();
     });
@@ -29,6 +32,12 @@ class ThreeBase{
     window.addEventListener('keydown', (e) => {
       this.onKeydown(e)
     });
+
+    // document.addEventListener('mousemove', () => {
+    //   // onDocumentMouseMove, false
+    // });
+
+    document.addEventListener( 'mousemove', (e) => {this.onDocumentMouseMove(e)}, false );
 
     /* stats */
     this.stats = new Stats();
@@ -45,7 +54,6 @@ class ThreeBase{
 
     /* camera */
     this.camera = new THREE.PerspectiveCamera(45, this.width / this.height, 1, 1000);
-    // this.camera = new THREE.OrthographicCamera(window.innerWidth / -2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / -2, -200, 500);
     this.camera.position.set(200, 300, 200);
     this.camera.lookAt(this.scene.position);
 
@@ -55,7 +63,7 @@ class ThreeBase{
     this.scene.add( light );
 
     /* cubes */
-    let geometry = new THREE.BoxBufferGeometry(5, 5, 5);
+    let geometry = new THREE.BoxBufferGeometry(8, 8, 8);
     for(let i = 0; i < 1000; i ++){
       let object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: Math.random() * 0x666600 } ) );
         object.position.x = Math.random() * 400 - 200;
@@ -67,12 +75,39 @@ class ThreeBase{
         object.rotation.z = Math.random() * 2 * Math.PI;
         this.scene.add(object);
     }
+
+    this.raycaster = new THREE.Raycaster();
   }
 
   update(){
     requestAnimationFrame(() => {
       this.update();
     });
+
+    this.raycaster.setFromCamera(this.mouse, this.camera);
+
+    let intersects = this.raycaster.intersectObjects(this.scene.children);
+    if(intersects.length > 0){
+      if(this.INTERSECTED != intersects[0].object){
+        if(this.INTERSECTED){
+          this.INTERSECTED.material.emissive.setHex(this.INTERSECTED.currentHex);
+        }
+        this.INTERSECTED = intersects[0].object;
+        this.INTERSECTED.currentHex = this.INTERSECTED.material.emissive.getHex();
+        this.INTERSECTED.material.emissive.setHex(0xff0000);
+
+        TweenLite.to(intersects[0].object.scale, 0.5, {x: 4, y: 4, z: 4, onComplete: () => {
+          TweenLite.to(intersects[0].object.scale, 1, {x: 1, y: 1, z: 1});
+        }});
+        TweenLite.to(intersects[0].object.rotation, 0.2, {x: intersects[0].object.rotation.x + 5});
+      }
+    }else{
+      if(this.INTERSECTED){
+        this.INTERSECTED.material.emissive.setHex(this.INTERSECTED.currentHex);
+      }
+      this.INTERSECTED = null;
+    }
+
     this.renderer.render(this.scene, this.camera);
     this.stats.update();
   }
@@ -90,6 +125,13 @@ class ThreeBase{
 
   onKeydown(e){
     console.log(e.key);
+  }
+
+  onDocumentMouseMove(e){
+    e.preventDefault();
+    
+    this.mouse.x = ( e.clientX / this.width ) * 2 - 1;
+    this.mouse.y = - ( e.clientY / this.height ) * 2 + 1;
   }
 }
 
