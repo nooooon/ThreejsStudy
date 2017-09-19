@@ -53,7 +53,6 @@ gulp.task('browser-sync', function(){
 
 // reload all browser
 gulp.task('bs-reload', function(){
-  console.log("re");
   browserSync.reload();
 });
 
@@ -63,7 +62,6 @@ gulp.task('bs-reload', function(){
 gulp.task('default', ['browser-sync', 'html', 'sass', 'js'], function(){
   gulp.watch('src/**/*.html',['html']);
   gulp.watch('src/sass/**/*.scss',['sass']);
-  gulp.watch(htdocsDir + '**/*.js', ['bs-reload']);
 });
 
 gulp.task('release', ['html', 'js', 'sass'], function(){

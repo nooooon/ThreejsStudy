@@ -9,6 +9,7 @@ module.exports = {
     'boxes/js/index': './src/boxes/js/index.js',
     'particle_normal/js/index': './src/particle_normal/js/index.js',
     'particle_text/js/index': './src/particle_text/js/index.js',
+    'webfont/js/index': './src/webfont/js/index.js',
   },
   output: {
     path: __dirname,
