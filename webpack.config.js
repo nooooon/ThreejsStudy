@@ -1,19 +1,16 @@
 var webpack = require('webpack');
 var path = require('path');
 
-module.exports = {
+const env = process.env.NODE_ENV;
+console.log(env);
+
+var config = {
   cache: true,
   watch: true,
   entry: {
-    'js/index': './src/js/index.js',
-    'boxes/js/index': './src/boxes/js/index.js',
-    'particle_normal/js/index': './src/particle_normal/js/index.js',
-    'particle_text/js/index': './src/particle_text/js/index.js',
-    'planeGeometry/js/index': './src/planeGeometry/js/index.js',
-    'webfont/js/index': './src/webfont/js/index.js',
+    'index': './src/js/index.js',
   },
   output: {
-    path: __dirname,
     filename: '[name].js'
   },
   module: {
@@ -29,8 +26,16 @@ module.exports = {
     new webpack.ProvidePlugin({
       jQuery: "jquery",
       $: "jquery"
-    }),
-    //new webpack.optimize.UglifyJsPlugin(),
-  ],
-  devtool: 'sourcemap'
+    })
+  ]
 };
+
+if(env === "release" || env === "dev"){
+  config.watch = false;
+  config.plugins.push(new webpack.optimize.UglifyJsPlugin());
+}else{
+  config.watch = true;
+  config.devtool = 'sourcemap';
+}
+
+module.exports = config;
